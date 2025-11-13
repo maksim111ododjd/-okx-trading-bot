@@ -1,7 +1,8 @@
---prefer-binary
+pip>=24.0
+setuptools>=70.0.0
+wheel>=0.43.0
 python-telegram-bot==20.3
 requests==2.31.0
 flask==3.0.2
 pandas==2.2.2
-numpy==1.26.4
-git+https://github.com/okxapi/python-okx.git@master#egg=okx
+git+https://github.com/okxapi/python-okx.git@master#egg=python-okx
