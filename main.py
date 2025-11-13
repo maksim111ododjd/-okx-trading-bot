@@ -421,33 +421,33 @@ def healthz():
 
 
     # 2) Telegram бот — теперь корректно через asyncio
-def start_background_workers():
+    def start_background_workers():
     # 1) торговый поток
     t = threading.Thread(target=trading_loop, daemon=True)
     t.start()
     safe_print("Trading thread started (daemon).")
 
     # 2) Telegram бот
-    if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        import asyncio
+         if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
+                    import asyncio
 
-        def run_telegram():
-            try:
-                app_tg = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+                    def run_telegram():
+                        try:
+                            app_tg = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
-                app_tg.add_handler(CommandHandler("start", start_command))
-                app_tg.add_handler(CommandHandler("help", help_command))
-                app_tg.add_handler(CommandHandler("status", status_command))
-                app_tg.add_handler(CommandHandler("stop", stop_command))
-                app_tg.add_handler(CommandHandler("run", run_command))
-                app_tg.add_handler(CommandHandler("restart", restart_command))
+                            app_tg.add_handler(CommandHandler("start", start_command))
+                            app_tg.add_handler(CommandHandler("help", help_command))
+                            app_tg.add_handler(CommandHandler("status", status_command))
+                            app_tg.add_handler(CommandHandler("stop", stop_command))
+                            app_tg.add_handler(CommandHandler("run", run_command))
+                            app_tg.add_handler(CommandHandler("restart", restart_command))
 
-                safe_print("Telegram bot started")
-                asyncio.run(app_tg.run_polling(poll_interval=3.0))
+                            safe_print("Telegram bot started")
+                            asyncio.run(app_tg.run_polling(poll_interval=3.0))
 
-            except Exception as e:
-                safe_print(f"Telegram thread crashed: {e}")
-                send_telegram_text(f"❌ Telegram thread crashed:\n{e}")
+                       except Exception as e:
+                            safe_print(f"Telegram thread crashed: {e}")
+                            send_telegram_text(f"❌ Telegram thread crashed:\n{e}")
 
         th = threading.Thread(target=run_telegram, daemon=True)
         th.start()
