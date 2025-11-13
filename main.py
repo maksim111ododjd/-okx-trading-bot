@@ -441,45 +441,45 @@ def start_background_workers():
     # 1) торговый поток
     t = threading.Thread(target=trading_loop, daemon=True)
     t.start()
-    safe_print("Trading thread started (daemon)")
+    safe_print("Trading thread started (daemon).")
 
     # 2) Telegram бот — теперь корректно через asyncio
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-
-
-
-                def run_telegram():
+        def run_telegram():
             try:
                 app_tg = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
-                app_tg.add_handler(CommandHandler("start", start))
+                app_tg.add_handler(CommandHandler("start", start_command))
                 app_tg.add_handler(CommandHandler("help", help_command))
                 app_tg.add_handler(CommandHandler("status", status_command))
-                app_tg.add_handler(CommandHandler("buy", buy_command))
-                app_tg.add_handler(CommandHandler("sell", sell_command))
-                app_tg.add_handler(CommandHandler("balance", balance_command))
-                app_tg.add_handler(CommandHandler("cancel", cancel_command))
+                app_tg.add_handler(CommandHandler("stop", stop_command))
+                app_tg.add_handler(CommandHandler("run", run_command))
+                app_tg.add_handler(CommandHandler("restart", restart_command))
 
-                safe_print("Telegram bot started successfully ✅")
-
+                safe_print("Telegram bot started")
                 asyncio.run(app_tg.run_polling(poll_interval=3.0))
 
             except Exception as e:
                 safe_print(f"Telegram thread crashed: {e}")
-                send_telegram_text(f"❌ Telegram bot error: {e}")
+                send_telegram_text(f"❌ Telegram thread crashed:\n{e}")
 
         th = threading.Thread(target=run_telegram, daemon=True)
         th.start()
         safe_print("Telegram polling thread started")
-            
-        
-# -------------------- Run server --------------------
+    else:
+        safe_print("Telegram not configured, skipping Telegram bot startup.")
+
+
+# ==========================================
+# 🚀 Запуск Flask-сервера и фоновых потоков
+# ==========================================
 if __name__ == "__main__":
-    # start workers
+    safe_print("Starting OKX trading bot...")
+
     start_background_workers()
-    # start flask webserver (Render uses PORT env)
-    port = int(os.getenv("PORT", "8000"))
-    safe_print("Starting Flask on port", port)
-    from flask import Flask as _F  # already imported but ensure
-    # Run flask (this will be main thread)
-    app.run(host="0.0.0.0", port=port)
+
+    try:
+        app.run(host="0.0.0.0", port=5000)
+    except Exception as e:
+        safe_print(f"Flask server crashed: {e}")
+        send_telegram_text(f"❌ Flask server crashed:\n{e}")
