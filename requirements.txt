@@ -2,3 +2,4 @@ python-telegram-bot==20.3
 requests==2.31.0
 okx-api
 flask==3.0.2
+ta
