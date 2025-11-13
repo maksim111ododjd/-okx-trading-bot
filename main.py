@@ -351,15 +351,37 @@ def run_multi_bot():
         raise
 
 # -------------------- Quick test --------------------
+# -------------------- Web server (for Render / health checks) --------------------
+from flask import Flask, jsonify
+import threading
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return jsonify({"ok": True, "msg": "OKX trading bot service"}), 200
+
+@app.route("/healthz")
+def healthz():
+    # можно дополнительно проверять доступность файлов или состояние (например len(open_positions))
+    return jsonify({"ok": True, "open_positions": len(open_positions)}), 200
+
+def start_flask():
+    # Render предоставляет порт в переменной PORT
+    port = int(os.getenv("PORT", "8000"))
+    # host 0.0.0.0 чтобы принимать внешние запросы
+    app.run(host="0.0.0.0", port=port)
+
 if __name__ == "__main__":
-    safe_print("CONFIG loaded. Quick checks:")
+    # Запускаем бота в фоновом демоне
+    t = threading.Thread(target=run_multi_bot, daemon=True, name="bot-thread")
+    t.start()
+    safe_print("Background bot thread started.")
+    # Запускаем Flask в главном потоке (он не блокирует фон. поток)
     try:
-        df = fetch_klines_okx(SYMBOLS[0], TIMEFRAME, limit=100)
-        safe_print(df.tail(3).to_string())
+        start_flask()
     except Exception as e:
-        safe_print("Klines check error:", e)
-    try:
-        safe_print("USDT balance:", get_usdt_balance())
-    except Exception as e:
-        safe_print("Balance check error:", e)
-    run_multi_bot()
+        safe_print("Flask server error:", e)
+        # если Flask упал — даём информацию в телеграм (если настроен)
+        send_telegram(f"⚠ Flask crashed: {e}")
+        raise
