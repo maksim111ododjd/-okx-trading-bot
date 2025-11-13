@@ -2,6 +2,6 @@ python-telegram-bot==20.3
 requests==2.31.0
 okx-api
 flask==3.0.2
-ta-lib-bin
+ta
 pandas==2.2.2
 numpy==1.26.4
