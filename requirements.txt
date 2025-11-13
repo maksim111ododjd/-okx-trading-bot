@@ -1,7 +1,6 @@
-# requirements.txt
 python-telegram-bot==20.3
 requests==2.31.0
 flask==3.0.2
 pandas==2.2.2
 numpy==1.26.4
-git+https://github.com/okxapi/python-okx.git@main#egg=okx
+git+https://github.com/okxapi/python-okx.git@master#egg=okx
