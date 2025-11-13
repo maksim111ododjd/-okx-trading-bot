@@ -435,31 +435,44 @@ def start_background_workers():
     t.start()
     safe_print("Trading thread started (daemon).")
 
-    # 2) Telegram бот — теперь корректно через asyncio.run()
+    # 2) Telegram бот — теперь корректно через asyncio.import asyncio  # добавь этот импорт рядом с def
+
+def start_background_workers():
+    # 1) торговый поток
+    t = threading.Thread(target=trading_loop, daemon=True)
+    t.start()
+    safe_print("Trading thread started (daemon)")
+
+    # 2) Telegram бот — теперь корректно через asyncio
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        def run_telegram():
+
+
+
+                def run_telegram():
             try:
                 app_tg = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-                app_tg.add_handler(CommandHandler("startbot", cmd_startbot))
-                app_tg.add_handler(CommandHandler("stopbot", cmd_stopbot))
-                app_tg.add_handler(CommandHandler("status", cmd_status))
-                app_tg.add_handler(CommandHandler("balance", cmd_balance))
-                app_tg.add_handler(CommandHandler("positions", cmd_positions))
-                app_tg.add_handler(CommandHandler("report", cmd_report))
-                safe_print("Telegram bot starting (polling)...")
 
-                # ВАЖНО: теперь запускаем через asyncio.run
+                app_tg.add_handler(CommandHandler("start", start))
+                app_tg.add_handler(CommandHandler("help", help_command))
+                app_tg.add_handler(CommandHandler("status", status_command))
+                app_tg.add_handler(CommandHandler("buy", buy_command))
+                app_tg.add_handler(CommandHandler("sell", sell_command))
+                app_tg.add_handler(CommandHandler("balance", balance_command))
+                app_tg.add_handler(CommandHandler("cancel", cancel_command))
+
+                safe_print("Telegram bot started successfully ✅")
+
                 asyncio.run(app_tg.run_polling(poll_interval=3.0))
+
             except Exception as e:
-                safe_print("Telegram thread error:", e)
-                send_telegram_text(f"⚠ Telegram thread error: {e}")
+                safe_print(f"Telegram thread crashed: {e}")
+                send_telegram_text(f"❌ Telegram bot error: {e}")
 
-        th = threading.Thread(target=run_telegram, name="telegram-poll", daemon=True)
+        th = threading.Thread(target=run_telegram, daemon=True)
         th.start()
-        safe_print("Telegram polling thread started.")
-    else:
-        safe_print("Telegram not configured (TELEGRAM_TOKEN/CHAT_ID missing).")
-
+        safe_print("Telegram polling thread started")
+            
+        
 # -------------------- Run server --------------------
 if __name__ == "__main__":
     # start workers
