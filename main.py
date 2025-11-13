@@ -426,8 +426,7 @@ def start_background_workers():
 
     # 2) telegram bot (async) - run in separate thread
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        # -------------------- Startup --------------------
-import asyncio  # добавь этот импорт прямо сюда (рядом с def)
+        # -------------------- Startup --------------------import asyncio  # добавь этот импорт прямо сюда (рядом с def)
 
 def start_background_workers():
     # 1) торговый поток
@@ -445,6 +444,8 @@ def start_background_workers():
 
     # 2) Telegram бот — теперь корректно через asyncio
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
+            import asyncio
+        
         def run_telegram():
             try:
                 app_tg = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
