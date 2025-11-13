@@ -418,34 +418,19 @@ def healthz():
     return jsonify({"ok": True, "open_positions": len(open_positions)})
 
 # -------------------- Startup --------------------
-def start_background_workers():
-    # 1) trading thread
-    t = threading.Thread(target=trading_loop, name="trading-loop", daemon=True)
-    t.start()
-    safe_print("Trading thread started (daemon).")
 
-    # 2) telegram bot (async) - run in separate thread
-    if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-        # -------------------- Startup --------------------import asyncio  # добавь этот импорт прямо сюда (рядом с def)
 
-def start_background_workers():
-    # 1) торговый поток
-    t = threading.Thread(target=trading_loop, name="trading-loop", daemon=True)
-    t.start()
-    safe_print("Trading thread started (daemon).")
-
-    # 2) Telegram бот — теперь корректно через asyncio.import asyncio  # добавь этот импорт рядом с def
-
+    # 2) Telegram бот — теперь корректно через asyncio
 def start_background_workers():
     # 1) торговый поток
     t = threading.Thread(target=trading_loop, daemon=True)
     t.start()
     safe_print("Trading thread started (daemon).")
 
-    # 2) Telegram бот — теперь корректно через asyncio
+    # 2) Telegram бот
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
-            import asyncio
-        
+        import asyncio
+
         def run_telegram():
             try:
                 app_tg = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
@@ -467,6 +452,7 @@ def start_background_workers():
         th = threading.Thread(target=run_telegram, daemon=True)
         th.start()
         safe_print("Telegram polling thread started")
+
     else:
         safe_print("Telegram not configured, skipping Telegram bot startup.")
 
