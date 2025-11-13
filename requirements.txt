@@ -14,3 +14,4 @@ pandas==2.2.3
 
 # Работа с OKX API
 git+https://github.com/okxapi/python-okx.git@master
+ta
