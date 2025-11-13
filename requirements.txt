@@ -1,9 +1,16 @@
-services:
-  - type: web
-    name: okx-trading-bot
-    env: python
-    region: frankfurt  # можно поменять на другой при желании
-    plan: free
-    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
-    startCommand: python main.py
-    autoDeploy: true
+# Базовые инструменты сборки
+pip>=24.0
+setuptools>=70.0.0
+wheel>=0.43.0
+
+# Основные зависимости проекта
+python-telegram-bot==20.3
+requests==2.31.0
+flask==3.0.2
+
+# Для работы с данными
+numpy==2.1.2
+pandas==2.2.3
+
+# Работа с OKX API
+git+https://github.com/okxapi/python-okx.git@master
